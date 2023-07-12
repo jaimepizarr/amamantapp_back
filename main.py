@@ -8,4 +8,9 @@ app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"message": "Hello world!"}
+    return {"message": "Hello world"}
+
+
+@app.get("/method")
+def method_get():
+    return {"method": "GET"}
