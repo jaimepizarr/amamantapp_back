@@ -79,8 +79,8 @@ class PostComment(Base):
     parent_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     user = relationship("User", back_populates="post_comments")
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
-    post_files = relationship("PostFile", back_populates="post")
-    post_likes = relationship("PostLike", back_populates="post")
+    post_files = relationship("PostFile", back_populates="post_comment")
+    post_likes = relationship("PostLike", back_populates="post_comment")
 
 
 class PostFile(Base):
