@@ -1,16 +1,42 @@
-#!/usr/bin/env python3
+"""
+Main module for the FastAPI application.
+"""
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+import os
+import sys
+
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+
+from src.admin import add_views_to_app
+from src.config.database import Base, engine, get_session
 
 
-app = FastAPI()
+engine_db = engine
+app = FastAPI(
+    dependencies=[Depends(get_session)],
+    title="AmmanatApp API",
+    version="0.1.0",
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    },
 
-@app.get("/")
-def root():
-    return {"message": "Hello world"}
+)
+app.add_middleware(SessionMiddleware, secret_key="some-random-string")
+
+Base.metadata.create_all(bind=engine_db)
 
 
-@app.get("/method")
-def method_get():
-    return {"method": "GET"}
+add_views_to_app(app, engine_db)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
