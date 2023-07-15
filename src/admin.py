@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from typing import Any, Dict
+from abc import abstractmethod
 from jinja2 import Template
 from starlette_admin.contrib.sqla import Admin, ModelView
 from sqlalchemy import desc, func, select
@@ -7,6 +9,7 @@ from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 from starlette_admin import CustomView
 from sqlalchemy.orm import Session
+from starlette_admin.fields import ImageField
 from src.models import (
     User,
     Location,
@@ -15,7 +18,18 @@ from src.models import (
     AppSuggestions,
     PostComment,
     PostLike,
+    PostFile,
 )
+import base64
+from .config.database import engine
+
+
+def get_db():
+    db = Session(engine)
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class HomeView(CustomView):
@@ -36,6 +50,37 @@ class HomeView(CustomView):
         )
 
 
+# imagefiled
+
+
+class PostCommentView(ModelView):
+    fields = [
+        "user",
+        "title",
+        "content",
+        "published_at",
+        ImageField("image"),
+    ]
+
+    async def create(self, request: Request, data: Dict[str, Any]):
+        image = data["image"][0]
+        data.pop("image")
+        content = await image.read()
+        base64_data = base64.b64encode(content).decode("utf-8")
+        db = next(get_db())
+        post_file = PostFile()
+        post_file.image = base64_data
+        db.add(post_file)
+        db.commit()
+        db.refresh(post_file)
+        data["parent_id"] = None
+        data["post_files"] = [post_file.id]
+        data["post_likes"] = None
+        self.fields.pop()
+        self.fields = self.fields + ["post_files", "post_likes", "parent_id"]
+        return await super().create(request, data)
+
+
 def add_views_to_app(app, engine_db):
     admin = Admin(
         engine_db,
@@ -49,7 +94,9 @@ def add_views_to_app(app, engine_db):
     admin.add_view(ModelView(MilkBank, icon="fa fa-building"))
     admin.add_view(ModelView(Donation, icon="fa fa-gift"))
     admin.add_view(ModelView(AppSuggestions, icon="fa fa-comment"))
-    admin.add_view(ModelView(PostComment, icon="fa fa-comment"))
+    admin.add_view(PostCommentView(PostComment, icon="fa fa-comment"))
+    admin.add_view(ModelView(PostFile, icon="fa fa-file-image-o"))
+
     admin.mount_to(app)
 
     return app

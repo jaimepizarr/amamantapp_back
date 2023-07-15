@@ -15,11 +15,11 @@ class LocationCreate(LocationBase):
 class LocationUpdate(LocationBase):
     pass
 
+
 class LocationPartialUpdate(BaseModel):
     country: str = None
     city: str = None
     address: str = None
-
 
 
 class Location(LocationBase):
@@ -28,9 +28,11 @@ class Location(LocationBase):
     class Config:
         orm_mode = True
 
+
 class UserLogin(BaseModel):
     email: str
     password: str
+
 
 class UserBase(UserLogin):
     is_admin: bool
@@ -43,12 +45,12 @@ class UserCreate(UserBase):
 class UserUpdate(UserBase):
     pass
 
+
 class UserPartialUpdate(BaseModel):
     email: str = None
     password: str = None
     is_admin: bool = None
     location_id: int = None
-
 
 
 class User(UserBase):
@@ -57,6 +59,7 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
 
 class UserToken(BaseModel):
     access_token: str
@@ -80,6 +83,7 @@ class MilkBankCreate(MilkBankBase):
 
 class MilkBankUpdate(MilkBankBase):
     pass
+
 
 class MilkBankPartialUpdate(BaseModel):
     website: str = None
@@ -162,6 +166,12 @@ class PostComment(PostCommentBase):
 
     class Config:
         orm_mode = True
+
+
+class PostCommentPartialUpdate(BaseModel):
+    is_commentable: bool = None
+    user_id: int = None
+    parent_id: int = None
 
 
 class PostBase(BaseModel):

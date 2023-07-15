@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from .config.database import Base
+from starlette.requests import Request
 
 
 class Location(Base):
@@ -82,6 +83,9 @@ class PostComment(Base):
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     post_files = relationship("PostFile", back_populates="post_comment")
     post_likes = relationship("PostLike", back_populates="post_comment")
+
+    async def __admin_repr__(self, request: Request):
+        return f"{self.title}"
 
 
 class PostFile(Base):
