@@ -1,8 +1,8 @@
 """migrations
 
-Revision ID: 6c0e6027a1c1
+Revision ID: 61ce186273ca
 Revises: 
-Create Date: 2023-07-14 23:05:16.763501
+Create Date: 2023-07-15 11:03:07.462599
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6c0e6027a1c1'
+revision = '61ce186273ca'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -73,29 +73,25 @@ def upgrade() -> None:
     op.create_index(op.f('ix_donations_id'), 'donations', ['id'], unique=False)
     op.create_table('post_comments',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(), nullable=True),
+    sa.Column('content', sa.String(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('is_commentable', sa.Boolean(), nullable=True),
+    sa.Column('is_likeable', sa.Boolean(), nullable=True),
     sa.Column('parent_id', sa.Integer(), nullable=True),
+    sa.Column('post_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['parent_id'], ['post_comments.id'], ondelete='NO ACTION'),
+    sa.ForeignKeyConstraint(['post_id'], ['post_comments.id'], ondelete='NO ACTION'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='NO ACTION'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_post_comments_id'), 'post_comments', ['id'], unique=False)
-    op.create_table('posts',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(), nullable=True),
-    sa.Column('content', sa.String(), nullable=True),
-    sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='NO ACTION'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_posts_id'), 'posts', ['id'], unique=False)
-    op.create_index(op.f('ix_posts_title'), 'posts', ['title'], unique=False)
+    op.create_index(op.f('ix_post_comments_title'), 'post_comments', ['title'], unique=False)
     op.create_table('post_files',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('post_id', sa.Integer(), nullable=True),
     sa.Column('image', sa.String(), nullable=False),
-    sa.ForeignKeyConstraint(['post_id'], ['posts.id'], ondelete='NO ACTION'),
+    sa.ForeignKeyConstraint(['post_id'], ['post_comments.id'], ondelete='NO ACTION'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_post_files_id'), 'post_files', ['id'], unique=False)
@@ -103,8 +99,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('post_id', sa.Integer(), nullable=True),
-    sa.Column('is_likeable', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['post_id'], ['posts.id'], ondelete='NO ACTION'),
+    sa.ForeignKeyConstraint(['post_id'], ['post_comments.id'], ondelete='NO ACTION'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='NO ACTION'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -118,9 +113,7 @@ def downgrade() -> None:
     op.drop_table('post_likes')
     op.drop_index(op.f('ix_post_files_id'), table_name='post_files')
     op.drop_table('post_files')
-    op.drop_index(op.f('ix_posts_title'), table_name='posts')
-    op.drop_index(op.f('ix_posts_id'), table_name='posts')
-    op.drop_table('posts')
+    op.drop_index(op.f('ix_post_comments_title'), table_name='post_comments')
     op.drop_index(op.f('ix_post_comments_id'), table_name='post_comments')
     op.drop_table('post_comments')
     op.drop_index(op.f('ix_donations_id'), table_name='donations')
