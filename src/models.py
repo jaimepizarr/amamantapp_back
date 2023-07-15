@@ -76,6 +76,7 @@ class PostComment(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
     is_commentable = Column(Boolean, default=False)
     is_likeable = Column(Boolean, default=True)
+    published_at = Column(DateTime, nullable=False)
     parent_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     user = relationship("User", back_populates="post_comments")
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
