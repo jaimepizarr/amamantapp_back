@@ -11,12 +11,12 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from src.admin import add_views_to_app
 from src.config.database import Base, engine, get_session
-
+from src.router import router
 
 engine_db = engine
 app = FastAPI(
     dependencies=[Depends(get_session)],
-    title="AmmanatApp API",
+    title="AmamantApp API",
     version="0.1.0",
     license_info={
         "name": "Apache 2.0",
@@ -30,6 +30,7 @@ Base.metadata.create_all(bind=engine_db)
 
 
 add_views_to_app(app, engine_db)
+app.include_router(router, prefix="/api/v1",dependencies=[Depends(get_session)])
 
 origins = ["*"]
 
