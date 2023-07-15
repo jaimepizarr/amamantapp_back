@@ -71,19 +71,14 @@ class AppSuggestions(Base):
 class PostComment(Base):
     __tablename__ = "post_comments"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
-    is_commentable = Column(Boolean, default=False)
-    parent_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
-    user = relationship("User", back_populates="post_comments")
-
-
-class Post(Base):
-    __tablename__ = "posts"
-    id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     content = Column(String)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
-    user = relationship("User")
+    is_commentable = Column(Boolean, default=False)
+    is_likeable = Column(Boolean, default=True)
+    parent_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
+    user = relationship("User", back_populates="post_comments")
+    post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     post_files = relationship("PostFile", back_populates="post")
     post_likes = relationship("PostLike", back_populates="post")
 
@@ -91,16 +86,15 @@ class Post(Base):
 class PostFile(Base):
     __tablename__ = "post_files"
     id = Column(Integer, primary_key=True, index=True)
-    post_id = Column(Integer, ForeignKey("posts.id", ondelete="NO ACTION"))
+    post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     image = Column(String, nullable=False)
-    post = relationship("Post", back_populates="post_files")
+    post_comment = relationship("PostComment", back_populates="post_files")
 
 
 class PostLike(Base):
     __tablename__ = "post_likes"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
-    post_id = Column(Integer, ForeignKey("posts.id", ondelete="NO ACTION"))
-    is_likeable = Column(Boolean, default=True)
+    post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     user = relationship("User", back_populates="post_likes")
-    post = relationship("Post", back_populates="post_likes")
+    post_comment = relationship("PostComment", back_populates="post_likes")
