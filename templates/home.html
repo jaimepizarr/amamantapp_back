@@ -50,9 +50,9 @@
                                             {{post.published_at.strftime("%B %d, %Y %H:%M")}}
                                         </span>
                                         <a class="ms-3"
-                                            href="{{ url_for(__name__ ~ ':detail', identity='user',pk=post.publisher.id)}}">
+                                            href="{{ url_for(__name__ ~ ':detail', identity='user',pk=post.user_id)}}">
                                             <i class="fa-solid fa-user"></i>
-                                            {{post.publisher.full_name}}
+                                            {{post.user.email}}
                                         </a>
                                     </div>
                                     <div class="d-flex flex-row mt-2">
@@ -85,15 +85,12 @@
                             {% for user in users %}
                             <div class="row g-3 align-items-center mb-3">
                                 <a href="#" class="col-auto">
-                                    <span class="avatar" {% if
-                                        user.avatar%}style="background-image: url({{ url_for(__name__ ~ ':api:file', storage=user.avatar.upload_storage,file_id=user.avatar.file_id)}})"
-                                        {%endif%}>{% if not user.avatar%}{{user.full_name[0]}}{%endif%}</span>
                                 </a>
                                 <div class="col text-truncate">
                                     <a href="{{ url_for(__name__ ~ ':detail', identity='user',pk=user.id)}}"
                                         class="text-reset d-block text-truncate">
-                                        {{user.full_name}}</a>
-                                    <div class="text-muted text-truncate mt-n1">{{user.posts | length}} posts</div>
+                                        {{user.email}}</a>
+
                                 </div>
                             </div>
                             {%endfor%}

@@ -9,7 +9,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from src.admin import add_views_to_app
+from src.admin.admin import add_views_to_app
 from src.config.database import Base, engine, get_session
 from src.router import router
 
@@ -22,7 +22,6 @@ app = FastAPI(
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
     },
-
 )
 app.add_middleware(SessionMiddleware, secret_key="some-random-string")
 
@@ -30,7 +29,7 @@ Base.metadata.create_all(bind=engine_db)
 
 
 add_views_to_app(app, engine_db)
-app.include_router(router, prefix="/api/v1",dependencies=[Depends(get_session)])
+app.include_router(router, prefix="/api/v1", dependencies=[Depends(get_session)])
 
 origins = ["*"]
 

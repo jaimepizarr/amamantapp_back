@@ -9,7 +9,7 @@ from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 from starlette_admin import CustomView
 from sqlalchemy.orm import Session
-from starlette_admin.fields import ImageField
+from starlette_admin.fields import ImageField, FileField, HasMany
 from src.models import (
     User,
     Location,
@@ -21,7 +21,10 @@ from src.models import (
     PostFile,
 )
 import base64
-from .config.database import engine
+from starlette_admin.views import BaseView
+from ..config.database import engine
+from datetime import datetime
+from ..admin.provider import MyAuthProvider
 
 
 def get_db():
@@ -55,29 +58,33 @@ class HomeView(CustomView):
 
 class PostCommentView(ModelView):
     fields = [
-        "user",
+        "id",
         "title",
         "content",
-        "published_at",
-        ImageField("image"),
+        ImageField("image", required=False),
+        "post_files",
+        "user",
     ]
+    exclude_fields_from_create = ["post_files"]
+    exclude_fields_from_list = ["image"]
 
-    async def create(self, request: Request, data: Dict[str, Any]):
-        image = data["image"][0]
-        data.pop("image")
-        content = await image.read()
-        base64_data = base64.b64encode(content).decode("utf-8")
-        db = next(get_db())
-        post_file = PostFile()
-        post_file.image = base64_data
+    async def create(self, request, data) -> Any:
+        if data["image"] is not None:
+            # read file data
+            file_data = await data["image"][0].read()
+            # encode data
+            data["image"] = base64.b64encode(file_data)
+        db = request.state.session
+        post_file = PostFile(image=data["image"])
         db.add(post_file)
         db.commit()
         db.refresh(post_file)
-        data["parent_id"] = None
         data["post_files"] = [post_file.id]
-        data["post_likes"] = None
-        self.fields.pop()
-        self.fields = self.fields + ["post_files", "post_likes", "parent_id"]
+        data["image"] = [FileField, None]
+        for field in self.fields:
+            if isinstance(field, HasMany):
+                field.exclude_from_create = False
+
         return await super().create(request, data)
 
 
@@ -86,6 +93,7 @@ def add_views_to_app(app, engine_db):
         engine_db,
         title="AmamantApp API",
         index_view=HomeView(label="Home", icon="fa fa-home"),
+        auth_provider=MyAuthProvider(),
     )
 
     admin.add_view(ModelView(User, icon="fa fa-user"))
@@ -95,7 +103,7 @@ def add_views_to_app(app, engine_db):
     admin.add_view(ModelView(Donation, icon="fa fa-gift"))
     admin.add_view(ModelView(AppSuggestions, icon="fa fa-comment"))
     admin.add_view(PostCommentView(PostComment, icon="fa fa-comment"))
-    admin.add_view(ModelView(PostFile, icon="fa fa-file-image-o"))
+    admin.add_view(ModelView(PostFile, icon="fa fa-file"))
 
     admin.mount_to(app)
 
