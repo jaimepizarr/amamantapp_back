@@ -89,7 +89,7 @@ def authenticate_user(db, email: str, password: str):
 
 
 @router.post("/login", response_model=UserToken)
-def login_for_access_token(user: UserLogin, db: Session = Depends(get_db)):
+async def login_for_access_token(user: UserLogin, db: Session = Depends(get_db)):
     user = authenticate_user(db, user.email, user.password)
     if not user:
         raise HTTPException(
