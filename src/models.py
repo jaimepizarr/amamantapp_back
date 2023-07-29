@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from .config.database import Base
 from starlette.requests import Request
+import datetime
 
 
 class Location(Base):
@@ -77,7 +78,7 @@ class PostComment(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
     is_commentable = Column(Boolean, default=False)
     is_likeable = Column(Boolean, default=True)
-    published_at = Column(DateTime, nullable=False)
+    published_at = Column(DateTime, nullable=False, default=datetime.datetime.now())
     parent_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     user = relationship("User", back_populates="post_comments")
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
@@ -90,7 +91,7 @@ class PostComment(Base):
 
 class PostFile(Base):
     __tablename__ = "post_files"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     image = Column(String, nullable=False)
     post_comment = relationship("PostComment", back_populates="post_files")
