@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Double
 from sqlalchemy.orm import relationship
 from .config.database import Base
 from starlette.requests import Request
@@ -11,6 +11,8 @@ class Location(Base):
     country = Column(String, index=True)
     city = Column(String, index=True)
     address = Column(String, index=True)
+    longitude = Column(Double, index=True )
+    latitude = Column(Double, index=True)
     users = relationship("User", back_populates="location")
     milk_banks = relationship("MilkBank", back_populates="location")
 
@@ -37,10 +39,12 @@ class User(Base):
 class MilkBank(Base):
     __tablename__ = "milk_banks"
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False, index=True)
     location_id = Column(Integer, ForeignKey("locations.id", ondelete="NO ACTION"))
-    website = Column(String, nullable=False)
-    phone_number = Column(String, nullable=False)
-    email = Column(String, nullable=False)
+    website = Column(String, nullable=False, index=True)
+    phone_number = Column(String, nullable=True)
+    email = Column(String, nullable=True, index=True)
+    image_url = Column(String, nullable=True)
     location = relationship("Location", back_populates="milk_banks")
     donations = relationship("Donation", back_populates="bank")
 
