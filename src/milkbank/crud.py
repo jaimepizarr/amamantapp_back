@@ -25,11 +25,19 @@ def create_milkbank(milkbank: MilkBankCreate, db: Session = Depends(get_db)):
     return db_milkbank
 
 @router.get("/", response_model=list[MilkBank])
-def get_all_milkbank(db: Session = Depends(get_db),  limit: int = 10, page: int = 1, search: str = ''):
+def get_all_milkbank(db: Session = Depends(get_db),  limit: int = 10, page: int = 1, search: str = '', type: str = "A"):
     skip = (page - 1) * limit
-    db_milkbanks = db.query(models.MilkBank).filter(
-        models.MilkBank.name.contains(search)
-    ).limit(limit).offset(skip).all()
+    #type A: ALL, B:Bank, C: Centro
+    if ( type != "A" ):
+        is_bank = type == "B"
+        db_milkbanks = db.query(models.MilkBank).filter(
+            models.MilkBank.name.lower().contains(search.lower()),
+            models.MilkBank.is_bank == is_bank
+        ).limit(limit).offset(skip).all()
+    else:
+        db_milkbanks = db.query(models.MilkBank).filter(
+            models.MilkBank.name.contains(search)
+        ).limit(limit).offset(skip).all()
     if not db_milkbanks:
         raise HTTPException(status_code=404, detail="No Milkbank created")
     return db_milkbanks
