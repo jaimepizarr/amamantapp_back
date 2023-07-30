@@ -25,8 +25,8 @@ from starlette_admin.views import BaseView
 from ..config.database import engine
 from datetime import datetime
 from ..admin.provider import MyAuthProvider
-
-
+from ..config.firebase import storage
+from uuid import uuid4
 def get_db():
     db = Session(engine)
     try:
@@ -86,6 +86,37 @@ class PostCommentView(ModelView):
                 field.exclude_from_create = False
 
         return await super().create(request, data)
+class MilkBankView(ModelView):
+    fields = [
+        "id",
+        "name",
+        "website",
+        "phone_number",
+        "email",
+        ImageField("image", required=False),
+         "is_bank",
+         "image_url"
+    ]
+    exclude_fields_from_create = ["donations", "image_url"]
+    exclude_fields_from_list = ["donations", "image"]
+
+    #Uploud image fireabse to storage get url and save in db
+    async def create(self, request, data) -> Any:
+        if data["image"] is not None:
+            # read file data
+            file_data = await data["image"][0].read()
+            image_name = str(uuid4())
+            t = storage.child("images/"+image_name).put(file_data)
+            print(t)
+            print(storage.child(t["name"]).get_url(None)    )
+            data["image_url"] = storage.child(t["name"]).get_url(None)
+            data["image"] =[FileField, None]
+            print(self.fields)
+            for field in self.fields:
+               if field.name == "image_url":
+                   field.exclude_from_create = False     
+        return await super().create(request, data)
+
 
 
 def add_views_to_app(app, engine_db):
@@ -99,7 +130,8 @@ def add_views_to_app(app, engine_db):
     admin.add_view(ModelView(User, icon="fa fa-user"))
     admin.add_view(ModelView(PostLike, icon="fa fa-thumbs-up"))
     admin.add_view(ModelView(Location, icon="fa fa-map-marker"))
-    admin.add_view(ModelView(MilkBank, icon="fa fa-building"))
+    admin.add_view(MilkBankView(MilkBank, icon="fa fa-building"))
+    # admin.add_view(ModelView(MilkBank, icon="fa fa-building"))
     admin.add_view(ModelView(Donation, icon="fa fa-gift"))
     admin.add_view(ModelView(AppSuggestions, icon="fa fa-comment"))
     admin.add_view(PostCommentView(PostComment, icon="fa fa-comment"))

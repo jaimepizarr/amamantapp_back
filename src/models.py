@@ -13,6 +13,7 @@ class Location(Base):
     address = Column(String, index=True)
     longitude = Column(Double, index=True )
     latitude = Column(Double, index=True)
+    name = Column(String, index=True)
     users = relationship("User", back_populates="location")
     milk_banks = relationship("MilkBank", back_populates="location")
 
@@ -43,6 +44,7 @@ class MilkBank(Base):
     location_id = Column(Integer, ForeignKey("locations.id", ondelete="NO ACTION"))
     website = Column(String, nullable=False, index=True)
     phone_number = Column(String, nullable=True)
+    is_bank = Column(Boolean, default=True, index=True)
     email = Column(String, nullable=True, index=True)
     image_url = Column(String, nullable=True)
     location = relationship("Location", back_populates="milk_banks")
