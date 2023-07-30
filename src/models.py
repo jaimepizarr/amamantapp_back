@@ -21,7 +21,9 @@ class Location(Base):
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, index=True, nullable=False)
+    nombre = Column(String, index=True)
+    apellido = Column(String, index=True)
+    email = Column(String, index=True, nullable=False, unique=True)
     password = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False)
     location_id = Column(Integer, ForeignKey("locations.id", ondelete="NO ACTION"))

@@ -120,4 +120,5 @@ def signup_for_access_token(user: UserCreate, db: Session = Depends(get_db)):
     access_token = create_access_token(
         data={"email": user.email}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    refresh_token = create_refresh_token(data={"email": user.email})
+    return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
