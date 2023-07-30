@@ -3,9 +3,12 @@ from pydantic import BaseModel
 
 
 class LocationBase(BaseModel):
-    country: str
-    city: str
-    address: str
+    country: str | None 
+    city: str | None
+    address: str | None
+    name: str | None
+    latitude: float | None
+    longitude: float | None
 
 
 class LocationCreate(LocationBase):
@@ -26,7 +29,7 @@ class Location(LocationBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserLogin(BaseModel):
@@ -72,10 +75,10 @@ class UserTokenData(BaseModel):
 
 
 class MilkBankBase(BaseModel):
-    website: str
-    phone_number: str
-    email: str
-    location_id: int
+    website: str | None
+    phone_number: str | None
+    email: str | None
+    location_id: int | None
 
 
 class MilkBankCreate(MilkBankBase):
@@ -95,7 +98,7 @@ class MilkBankPartialUpdate(BaseModel):
 
 class MilkBank(MilkBankBase):
     id: int
-    location: Location
+    location: Location | None
 
     class Config:
         orm_mode = True
