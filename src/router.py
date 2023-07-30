@@ -14,8 +14,7 @@ router = APIRouter()
 
 router.include_router(auth_crud.router)
 router.include_router(
-    locations_crud.router, dependencies=[Depends(auth_crud.get_current_user)]
-)
+    locations_crud.router)
 router.include_router(donations_crud.router)
 router.include_router(app_suggestions_crud.router)
 router.include_router(milkbanks_crud.router)

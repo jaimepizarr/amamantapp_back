@@ -75,10 +75,13 @@ class UserTokenData(BaseModel):
 
 
 class MilkBankBase(BaseModel):
+    name: str | None
     website: str | None
     phone_number: str | None
     email: str | None
     location_id: int | None
+    is_bank: bool | None
+    image_url: str | None
 
 
 class MilkBankCreate(MilkBankBase):

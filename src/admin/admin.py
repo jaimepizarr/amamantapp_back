@@ -95,6 +95,7 @@ class MilkBankView(ModelView):
         "email",
         ImageField("image", required=False),
          "is_bank",
+         "location",
          "image_url"
     ]
     exclude_fields_from_create = ["donations", "image_url"]
