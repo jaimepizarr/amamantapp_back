@@ -24,6 +24,16 @@ def create_milkbank(milkbank: MilkBankCreate, db: Session = Depends(get_db)):
     db.refresh(db_milkbank)
     return db_milkbank
 
+@router.get("/", response_model=list[MilkBank])
+def get_all_milkbank(db: Session = Depends(get_db),  limit: int = 10, page: int = 1, search: str = ''):
+    skip = (page - 1) * limit
+    db_milkbanks = db.query(models.MilkBank).filter(
+        models.MilkBank.name.contains(search)
+    ).limit(limit).offset(skip).all()
+    if not db_milkbanks:
+        raise HTTPException(status_code=404, detail="No Milkbank created")
+    return db_milkbanks
+
 @router.get("/{milkbank_id}", response_model=MilkBank)
 def read_milkbank(milkbank_id: int, db: Session = Depends(get_db)):
     db_milkbank = db.query(models.MilkBank).filter(models.MilkBank.id == milkbank_id).first()
