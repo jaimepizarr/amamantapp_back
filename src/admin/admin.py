@@ -19,6 +19,9 @@ from src.models import (
     PostComment,
     PostLike,
     PostFile,
+    Section,
+    PostAprendeMas,
+    PostHome
 )
 import base64
 from starlette_admin.views import BaseView
@@ -27,6 +30,8 @@ from datetime import datetime
 from ..admin.provider import MyAuthProvider
 from ..config.firebase import storage
 from uuid import uuid4
+from starlette_admin import DropDown
+
 def get_db():
     db = Session(engine)
     try:
@@ -119,6 +124,35 @@ class MilkBankView(ModelView):
         return await super().create(request, data)
 
 
+class PostAdminView(ModelView):
+    fields = [
+        "id",
+        "title",
+        "section",
+        "content",
+        ImageField("image", required=False),
+        "image_url",
+        ]
+    exclude_fields_from_create = ["image_url"]
+    exclude_fields_from_list = ["image"]
+
+    #Uploud image fireabse to storage get url and save in db
+    async def create(self, request, data) -> Any:
+        if data["image"] is not None:
+            # read file data
+            file_data = await data["image"][0].read()
+            image_name = str(uuid4())
+            t = storage.child("images/"+image_name).put(file_data)
+            print(t)
+            print(storage.child(t["name"]).get_url(None)    )
+            data["image_url"] = storage.child(t["name"]).get_url(None)
+            data["image"] =[FileField, None]
+            print(self.fields)
+            for field in self.fields:
+               if field.name == "image_url":
+                   field.exclude_from_create = False     
+        return await super().create(request, data)
+    
 
 def add_views_to_app(app, engine_db):
     admin = Admin(
@@ -127,16 +161,50 @@ def add_views_to_app(app, engine_db):
         index_view=HomeView(label="Home", icon="fa fa-home"),
         auth_provider=MyAuthProvider(),
     )
+    admin.add_view(DropDown(
+        "Users",
+        icon="fa fa-user",
+        views=[
+            ModelView(User, icon="fa fa-user"),
+            ModelView(Donation, icon="fa fa-gift")
+        ]
 
-    admin.add_view(ModelView(User, icon="fa fa-user"))
-    admin.add_view(ModelView(PostLike, icon="fa fa-thumbs-up"))
-    admin.add_view(ModelView(Location, icon="fa fa-map-marker"))
-    admin.add_view(MilkBankView(MilkBank, icon="fa fa-building"))
-    # admin.add_view(ModelView(MilkBank, icon="fa fa-building"))
-    admin.add_view(ModelView(Donation, icon="fa fa-gift"))
+    ))
+ 
+    admin.add_view(DropDown(
+        "Locations",
+        icon="fa fa-map-marker",
+        views=[
+            MilkBankView(MilkBank, icon="fa fa-building"),
+            ModelView(Location, icon="fa fa-map-marker"),
+        ]
+    ))
+  
+    admin.add_view(DropDown
+                   ("Comunity",
+                    icon="fa fa-users",
+                    views=[
+                        ModelView(PostComment, icon="fa fa-comment"),
+                        ModelView(PostLike, icon="fa fa-thumbs-up"),
+                        ModelView(PostFile, icon="fa fa-file"),
+
+                    ]))
     admin.add_view(ModelView(AppSuggestions, icon="fa fa-comment"))
-    admin.add_view(PostCommentView(PostComment, icon="fa fa-comment"))
-    admin.add_view(ModelView(PostFile, icon="fa fa-file"))
+
+    admin.add_view(
+        DropDown(
+        "Posts",
+        icon="fa fa-newspaper",
+        views=[
+            ModelView(Section, icon="fa fa-newspaper-o"),
+            PostAdminView(PostHome, icon="fa fa-newspaper-o"),
+            PostAdminView(PostAprendeMas, icon="fa fa-newspaper-o"),
+           
+        ]
+        
+        )
+    )
+
 
     admin.mount_to(app)
 

@@ -110,3 +110,27 @@ class PostLike(Base):
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     user = relationship("User", back_populates="post_likes")
     post_comment = relationship("PostComment", back_populates="post_likes")
+
+
+class Section(Base):
+    __tablename__ = "sections"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    home_posts = relationship("PostHome", back_populates="section")
+    aprende_mas_posts = relationship("PostAprendeMas", back_populates="section")
+
+class PostBase(Base):
+    __abstract__ = True
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True, nullable=False)
+    content = Column(String, nullable=False)
+    image_url = Column(String, nullable=False)
+    section_id = Column(Integer, ForeignKey("sections.id"))
+
+class PostHome(PostBase):
+    __tablename__ = "home_posts"
+    section = relationship("Section", back_populates="home_posts")
+
+class PostAprendeMas(PostBase):
+    __tablename__ = "aprende_mas_posts"
+    section = relationship("Section", back_populates="aprende_mas_posts")
