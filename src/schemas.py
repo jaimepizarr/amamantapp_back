@@ -34,12 +34,14 @@ class UserLogin(BaseModel):
     apellido: Optional[str]
 
 class UserBase(UserLogin):
-    is_admin: Optional[bool]
+    is_admin: Optional[bool] = False
 
 class UserCreate(UserBase):
-    location_id: Optional[int]
+    nombre: str
+    apellido: str
 
 class UserUpdate(UserBase):
+    location_id: int = None
     pass
 
 class UserPartialUpdate(BaseModel):

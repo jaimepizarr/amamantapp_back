@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
-from fastapi import HTTPException
 from typing import Annotated
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
