@@ -30,8 +30,6 @@ class Location(LocationBase):
 class UserLogin(BaseModel):
     email: Optional[str]
     password: Optional[str]
-    nombre: Optional[str]
-    apellido: Optional[str]
 
 class UserBase(UserLogin):
     is_admin: Optional[bool] = False
@@ -45,6 +43,8 @@ class UserUpdate(UserBase):
     pass
 
 class UserPartialUpdate(BaseModel):
+    nombre: Optional[str] = None
+    apellido: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
     is_admin: Optional[bool] = None

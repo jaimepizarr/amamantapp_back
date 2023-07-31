@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from .. import models
 from ..schemas import UserCreate, UserUpdate, User, UserPartialUpdate, UserLogin, UserToken
 from ..config.database import engine
-from ..auth.crud import get_current_user
+from ..auth.crud import get_current_user, get_password_hash 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 # Crear una sesión de base de datos
@@ -30,6 +30,8 @@ def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     for attr, value in user.model_dump().items():
+        if (attr == "password"):
+            value = get_password_hash(value)
         setattr(db_user, attr, value)
     db.commit()
     db.refresh(db_user)
@@ -41,7 +43,15 @@ def update_partial_user(user_id: int, user: UserPartialUpdate, db: Session = Dep
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     for attr, value in user.model_dump().items():
-        setattr(db_user, attr, value)
+        if (value != None):
+            if (type(value) == "string" and not len(value.strip())):
+                continue
+            if (attr == "password"):
+                if (value.strip() != ""):
+                    value = get_password_hash(value)
+                else:
+                    continue
+            setattr(db_user, attr, value)
     db.commit()
     db.refresh(db_user)
     return db_user
