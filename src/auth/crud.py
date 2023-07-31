@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-from http.client import HTTPException
+from fastapi import HTTPException
 from typing import Annotated
 from fastapi import APIRouter, status
 from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-from ..config.jwt import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from ..config.jwt import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_WEEKS
 from passlib.context import CryptContext
 from .. import models
 from fastapi.security import OAuth2PasswordBearer
@@ -32,7 +32,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(weeks=4)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -97,7 +97,7 @@ async def login_for_access_token(user: UserLogin, db: Session = Depends(get_db))
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(weeks=ACCESS_TOKEN_EXPIRE_WEEKS)
     access_token = create_access_token(
         data={"email": user.email}, expires_delta=access_token_expires
     )
@@ -116,7 +116,7 @@ def signup_for_access_token(user: UserCreate, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(weeks=ACCESS_TOKEN_EXPIRE_WEEKS)
     access_token = create_access_token(
         data={"email": user.email}, expires_delta=access_token_expires
     )

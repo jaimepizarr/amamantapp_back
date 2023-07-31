@@ -19,23 +19,6 @@ router.include_router(
 router.include_router(donations_crud.router)
 router.include_router(app_suggestions_crud.router)
 router.include_router(milkbanks_crud.router)
-router.include_router(users_crud.router)
+router.include_router(users_crud.router,dependencies=[Depends(auth_crud.get_current_user)])
 router.include_router(post_comments_crud.router)
 router.include_router(posts_crud.router)
-
-
-# CRUD para el modelo User
-
-# CRUD para el modelo MilkBank
-
-# CRUD para el modelo Donation
-
-# CRUD para el modelo AppSuggestions
-
-# CRUD para el modelo PostComment
-
-# CRUD para el modelo Post
-
-# CRUD para el modelo PostFile
-
-# CRUD para el modelo PostLike

@@ -1,29 +1,25 @@
+from typing import Optional
 import datetime
 from pydantic import BaseModel
 
-
 class LocationBase(BaseModel):
-    country: str | None 
-    city: str | None
-    address: str | None
-    name: str | None
-    latitude: float | None
-    longitude: float | None
-
+    country: Optional[str]
+    city: Optional[str]
+    address: Optional[str]
+    name: Optional[str]
+    latitude: Optional[float]
+    longitude: Optional[float]
 
 class LocationCreate(LocationBase):
     pass
 
-
 class LocationUpdate(LocationBase):
     pass
 
-
 class LocationPartialUpdate(BaseModel):
-    country: str = None
-    city: str = None
-    address: str = None
-
+    country: Optional[str] = None
+    city: Optional[str] = None
+    address: Optional[str] = None
 
 class Location(LocationBase):
     id: int
@@ -31,217 +27,187 @@ class Location(LocationBase):
     class Config:
         from_attributes = True
 
-
 class UserLogin(BaseModel):
-    email: str
-    password: str
-
+    email: Optional[str]
+    password: Optional[str]
+    nombre: Optional[str]
+    apellido: Optional[str]
 
 class UserBase(UserLogin):
-    is_admin: bool
-
+    is_admin: Optional[bool]
 
 class UserCreate(UserBase):
-    location_id: int = None
-
+    location_id: Optional[int]
 
 class UserUpdate(UserBase):
     pass
 
-
 class UserPartialUpdate(BaseModel):
-    email: str = None
-    password: str = None
-    is_admin: bool = None
-    location_id: int = None
-
+    email: Optional[str] = None
+    password: Optional[str] = None
+    is_admin: Optional[bool] = None
+    location_id: Optional[int] = None
 
 class User(UserBase):
     id: int
-    location: Location
+    location: Optional[Location]
 
     class Config:
         orm_mode = True
 
-
 class UserToken(BaseModel):
-    access_token: str | None
-    refresh_token: str | None
-    token_type: str | None
-
+    access_token: Optional[str]
+    refresh_token: Optional[str]
+    token_type: Optional[str]
 
 class UserTokenData(BaseModel):
-    email: str | None = None
-
+    email: Optional[str] = None
 
 class MilkBankBase(BaseModel):
-    name: str | None
-    website: str | None
-    phone_number: str | None
-    email: str | None
-    location_id: int | None
-    is_bank: bool | None
-    image_url: str | None
-
+    name: Optional[str]
+    website: Optional[str]
+    phone_number: Optional[str]
+    email: Optional[str]
+    location_id: Optional[int]
+    is_bank: Optional[bool]
+    image_url: Optional[str]
 
 class MilkBankCreate(MilkBankBase):
     pass
 
-
 class MilkBankUpdate(MilkBankBase):
     pass
 
-
 class MilkBankPartialUpdate(BaseModel):
-    website: str = None
-    phone_number: str = None
-    email: str = None
-    location_id: int = None
-
+    website: Optional[str] = None
+    phone_number: Optional[str] = None
+    email: Optional[str] = None
+    location_id: Optional[int] = None
 
 class MilkBank(MilkBankBase):
     id: int
-    location: Location | None
+    location: Optional[Location]
 
     class Config:
         orm_mode = True
 
-
 class DonationBase(BaseModel):
     donation_date: datetime.datetime
-    approved: bool
-    approved_by: int
 
+    class Config:
+        orm_mode = True
 
 class DonationCreate(DonationBase):
-    user_id: int
-    bank_id: int
-
+    pass
 
 class DonationUpdate(DonationBase):
     pass
 
-
 class Donation(DonationBase):
     id: int
-    donor: User
-    approver: User
-    bank: MilkBank
+    user_id: Optional[int]
+    bank_id: Optional[int]
+    approved: Optional[bool] = None
+    approved_by: Optional[int] = None
+    donor: Optional[User]
+    bank: Optional[MilkBank]
 
     class Config:
         orm_mode = True
-
 
 class AppSuggestionsBase(BaseModel):
     suggestion: str
     user_id: int
 
-
 class AppSuggestionsCreate(AppSuggestionsBase):
     pass
-
 
 class AppSuggestionsUpdate(AppSuggestionsBase):
     pass
 
-
 class AppSuggestions(AppSuggestionsBase):
     id: int
-    user: User
+    user: Optional[User]
 
     class Config:
         orm_mode = True
 
-
 class PostCommentBase(BaseModel):
-    is_commentable: bool
+    is_commentable: Optional[bool]
     user_id: int
     parent_id: int
-
 
 class PostCommentCreate(PostCommentBase):
     pass
 
-
 class PostCommentUpdate(PostCommentBase):
     pass
 
-
 class PostComment(PostCommentBase):
     id: int
-    user: User
+    user: Optional[User]
 
     class Config:
         orm_mode = True
 
-
 class PostCommentPartialUpdate(BaseModel):
-    is_commentable: bool = None
-    user_id: int = None
-    parent_id: int = None
-
+    is_commentable: Optional[bool] = None
+    user_id: Optional[int] = None
+    parent_id: Optional[int] = None
 
 class PostBase(BaseModel):
     title: str
     content: str
     user_id: int
 
-
 class PostCreate(PostBase):
     pass
-
 
 class PostUpdate(PostBase):
     pass
 
-
 class Post(PostBase):
     id: int
-    user: User
+    user: Optional[User]
 
     class Config:
         orm_mode = True
-
 
 class PostFileBase(BaseModel):
     image: str
     post_id: int
 
-
 class PostFileCreate(PostFileBase):
     pass
-
 
 class PostFileUpdate(PostFileBase):
     pass
 
-
 class PostFile(PostFileBase):
     id: int
-    post: Post
+    post: Optional[Post]
 
     class Config:
         orm_mode = True
-
 
 class PostLikeBase(BaseModel):
     user_id: int
     post_id: int
-    is_likeable: bool
-
+    is_likeable: Optional[bool]
 
 class PostLikeCreate(PostLikeBase):
     pass
 
-
 class PostLikeUpdate(PostLikeBase):
     pass
 
-
 class PostLike(PostLikeBase):
     id: int
-    user: User
-    post: Post
+    user: Optional[User]
+    post: Optional[Post]
 
     class Config:
         orm_mode = True
+
+# You can add more models below if needed...
+
