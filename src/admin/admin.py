@@ -18,10 +18,10 @@ from src.models import (
     AppSuggestions,
     PostComment,
     PostLike,
-    PostFile,
     Section,
     PostAprendeMas,
-    PostHome
+    PostHome,
+    QuestionToExpert
 )
 import base64
 from starlette_admin.views import BaseView
@@ -58,39 +58,8 @@ class HomeView(CustomView):
         )
 
 
-# imagefiled
 
 
-class PostCommentView(ModelView):
-    fields = [
-        "id",
-        "title",
-        "content",
-        ImageField("image", required=False),
-        "post_files",
-        "user",
-    ]
-    exclude_fields_from_create = ["post_files"]
-    exclude_fields_from_list = ["image"]
-
-    async def create(self, request, data) -> Any:
-        if data["image"] is not None:
-            # read file data
-            file_data = await data["image"][0].read()
-            # encode data
-            data["image"] = base64.b64encode(file_data)
-        db = request.state.session
-        post_file = PostFile(image=data["image"])
-        db.add(post_file)
-        db.commit()
-        db.refresh(post_file)
-        data["post_files"] = [post_file.id]
-        data["image"] = [FileField, None]
-        for field in self.fields:
-            if isinstance(field, HasMany):
-                field.exclude_from_create = False
-
-        return await super().create(request, data)
 class MilkBankView(ModelView):
     fields = [
         "id",
@@ -113,11 +82,8 @@ class MilkBankView(ModelView):
             file_data = await data["image"][0].read()
             image_name = str(uuid4())
             t = storage.child("images/"+image_name).put(file_data)
-            print(t)
-            print(storage.child(t["name"]).get_url(None)    )
             data["image_url"] = storage.child(t["name"]).get_url(None)
             data["image"] =[FileField, None]
-            print(self.fields)
             for field in self.fields:
                if field.name == "image_url":
                    field.exclude_from_create = False     
@@ -143,11 +109,8 @@ class PostAdminView(ModelView):
             file_data = await data["image"][0].read()
             image_name = str(uuid4())
             t = storage.child("images/"+image_name).put(file_data)
-            print(t)
-            print(storage.child(t["name"]).get_url(None)    )
             data["image_url"] = storage.child(t["name"]).get_url(None)
             data["image"] =[FileField, None]
-            print(self.fields)
             for field in self.fields:
                if field.name == "image_url":
                    field.exclude_from_create = False     
@@ -186,7 +149,6 @@ def add_views_to_app(app, engine_db):
                     views=[
                         ModelView(PostComment, icon="fa fa-comment"),
                         ModelView(PostLike, icon="fa fa-thumbs-up"),
-                        ModelView(PostFile, icon="fa fa-file"),
 
                     ]))
     admin.add_view(ModelView(AppSuggestions, icon="fa fa-comment"))
@@ -204,6 +166,7 @@ def add_views_to_app(app, engine_db):
         
         )
     )
+    admin.add_view(ModelView(QuestionToExpert, icon="fa fa-question"))
 
 
     admin.mount_to(app)

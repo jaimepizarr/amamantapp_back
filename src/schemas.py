@@ -211,5 +211,14 @@ class PostLike(PostLikeBase):
     class Config:
         orm_mode = True
 
-# You can add more models below if needed...
 
+
+class QuestionToExpertBase(BaseModel):
+    content: str
+    image_url: Optional[str] = None
+
+class QuestionToExpertCreate(QuestionToExpertBase):
+    pass
+
+class QuestionToExpert(QuestionToExpertBase):
+    pass

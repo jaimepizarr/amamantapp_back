@@ -87,22 +87,14 @@ class PostComment(Base):
     is_commentable = Column(Boolean, default=False)
     is_likeable = Column(Boolean, default=True)
     published_at = Column(DateTime, nullable=False, default=datetime.datetime.now())
+    from_expert = Column(Boolean, default=False)
     parent_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     user = relationship("User", back_populates="post_comments")
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
-    post_files = relationship("PostFile", back_populates="post_comment")
     post_likes = relationship("PostLike", back_populates="post_comment")
 
     async def __admin_repr__(self, request: Request):
         return f"{self.title}"
-
-
-class PostFile(Base):
-    __tablename__ = "post_files"
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
-    image = Column(String, nullable=False)
-    post_comment = relationship("PostComment", back_populates="post_files")
 
 
 class PostLike(Base):
@@ -136,3 +128,12 @@ class PostHome(PostBase):
 class PostAprendeMas(PostBase):
     __tablename__ = "aprende_mas_posts"
     section = relationship("Section", back_populates="aprende_mas_posts")
+
+
+class QuestionToExpert(Base):
+    __tablename__ = "questions_to_experts"
+    id = Column(Integer, primary_key=True, index=True)
+    content = Column(String, nullable=False)
+    image_url = Column(String, nullable=True)
+
+

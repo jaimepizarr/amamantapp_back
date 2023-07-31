@@ -12,7 +12,6 @@ config = {
     "appId": os.getenv("FIREBASE_APP_ID"),
     "measurementId": os.getenv("FIREBASE_MEASUREMENT_ID")
 }
-print(config)
 firebase = pyrebase.initialize_app(config)
 
 storage = firebase.storage()
