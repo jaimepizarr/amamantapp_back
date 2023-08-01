@@ -20,6 +20,14 @@ def get_db():
 
 # Operaciones CRUD para el modelo Location
 
+@router.get("/", response_model=list[Donation])
+def get_all_donations_from_user(db: Session = Depends(get_db), user = Depends(get_current_user)):
+    print(user.id)
+    db_donations = db.query(models.Donation).filter(models.Donation.user_id == user.id).all()
+    if not db_donations or not len(db_donations):
+        raise HTTPException(status_code=404, detail="No donations found from you")
+    return db_donations
+
 @router.post("/", response_model=Donation)
 def create_donation(donation: DonationCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
     try:

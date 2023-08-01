@@ -95,6 +95,7 @@ class MilkBank(MilkBankBase):
 
 class DonationBase(BaseModel):
     donation_date: datetime.datetime
+    bank_id: Optional[int]
 
     class Config:
         orm_mode = True
@@ -108,11 +109,10 @@ class DonationUpdate(DonationBase):
 class Donation(DonationBase):
     id: int
     user_id: Optional[int]
-    bank_id: Optional[int]
     approved: Optional[bool] = None
     approved_by: Optional[int] = None
-    donor: Optional[User]
-    bank: Optional[MilkBank]
+    donor: Optional[User] | None
+    bank: Optional[MilkBank] | None
 
     class Config:
         orm_mode = True
