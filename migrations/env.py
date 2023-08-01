@@ -7,9 +7,7 @@ from alembic import context
 
 import os
 import src.models as models
-from dotenv import load_dotenv
 
-load_dotenv()
 
 
 # This is the Alembic Config object, which provides
@@ -20,7 +18,9 @@ config = context.config
 
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
+
+DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
