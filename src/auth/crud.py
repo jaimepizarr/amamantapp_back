@@ -10,6 +10,7 @@ from .. import models
 from fastapi.security import OAuth2PasswordBearer
 from ..schemas import UserTokenData, UserLogin, UserToken, UserCreate
 from ..config.database import engine
+from ..config.firestore import add_document
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -111,7 +112,7 @@ async def login_for_access_token(user: UserLogin, db: Session = Depends(get_db))
 
 @router.post("/signup", response_model=UserToken)
 def signup_for_access_token(user: UserCreate, db: Session = Depends(get_db)):
-    user = models.User(email=user.email, password=get_password_hash(user.password))
+    user = models.User(email=user.email, password=get_password_hash(user.password), nombre=user.nombre, apellido=user.apellido)
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -120,4 +121,11 @@ def signup_for_access_token(user: UserCreate, db: Session = Depends(get_db)):
         data={"email": user.email}, expires_delta=access_token_expires
     )
     refresh_token = create_refresh_token(data={"email": user.email})
+    userId = str(user.id)
+    firestore_user = add_document("users",userId,{"nombre": user.nombre, "apellido": user.apellido, "email": user.email})
+    if ( firestore_user["success"] ):
+        print("SE GUARDO EN FIRESTORE")
+    else:
+        print("F, no se guardo", firestore_user["message"])
+    
     return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}

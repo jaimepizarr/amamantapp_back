@@ -20,7 +20,7 @@ router.include_router(
 router.include_router(donations_crud.router)
 router.include_router(app_suggestions_crud.router)
 router.include_router(milkbanks_crud.router)
-router.include_router(users_crud.router,dependencies=[Depends(auth_crud.get_current_user)])
+router.include_router(users_crud.router)
 router.include_router(post_comments_crud.router)
 router.include_router(posts_crud.router)
 router.include_router(question_to_expert_crud.router)

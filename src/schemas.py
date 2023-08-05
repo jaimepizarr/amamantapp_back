@@ -40,6 +40,7 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     location_id: int = None
+    profile_picture: str = None
     pass
 
 class UserPartialUpdate(BaseModel):
@@ -49,6 +50,7 @@ class UserPartialUpdate(BaseModel):
     password: Optional[str] = None
     is_admin: Optional[bool] = None
     location_id: Optional[int] = None
+    profile_picture: str = None
 
 class User(UserBase):
     id: int
