@@ -224,3 +224,14 @@ class QuestionToExpertCreate(QuestionToExpertBase):
 
 class QuestionToExpert(QuestionToExpertBase):
     pass
+
+class PostCategoriesBase(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
+class PostCategoriesRetrieve(PostCategoriesBase):
+    id: int
+    class Config:
+        orm_mode = True
