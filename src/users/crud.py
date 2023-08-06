@@ -61,7 +61,7 @@ def update_partial_user(user_id: int, user: UserPartialUpdate, db: Session = Dep
             setattr(db_user, attr, value)
     db.commit()
     db.refresh(db_user)
-    updtObj = {"uid": user_id, "nombre":db_user.nombre, "apellido":db_user.apellido}
+    updtObj = {"uid": str(user_id), "nombre":db_user.nombre, "apellido":db_user.apellido}
     if (user.model_dump().get("profile_picture") != None):
         updtObj["profile_picture"] = user.model_dump().get("profile_picture")
     doc_updt = update_document("users",str(user_id), updtObj)
