@@ -77,12 +77,18 @@ class AppSuggestions(Base):
     suggestion = Column(String, nullable=False)
     user = relationship("User", back_populates="app_suggestions")
 
+class PostCategory(Base):
+    __tablename__ = "post_categories"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False, index=True)
+    posts = relationship("PostComment", back_populates="category")
 
 class PostComment(Base):
     __tablename__ = "post_comments"
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     content = Column(String)
+    category_id = Column(Integer, ForeignKey("post_categories.id", ondelete="NO ACTION"))
     user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
     is_commentable = Column(Boolean, default=False)
     is_likeable = Column(Boolean, default=True)
@@ -90,8 +96,10 @@ class PostComment(Base):
     from_expert = Column(Boolean, default=False)
     parent_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     user = relationship("User", back_populates="post_comments")
+    approved = Column(Boolean, default=False)
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     post_likes = relationship("PostLike", back_populates="post_comment")
+    category = relationship("PostCategory", back_populates="posts")
 
     async def __admin_repr__(self, request: Request):
         return f"{self.title}"

@@ -21,7 +21,8 @@ from src.models import (
     Section,
     PostAprendeMas,
     PostHome,
-    QuestionToExpert
+    QuestionToExpert,
+    PostCategory
 )
 import base64
 from starlette_admin.views import BaseView
@@ -31,6 +32,8 @@ from ..admin.provider import MyAuthProvider
 from ..config.firebase import storage
 from uuid import uuid4
 from starlette_admin import DropDown
+from ..config.firestore import add_document, db as firestore
+
 
 def get_db():
     db = Session(engine)
@@ -58,6 +61,10 @@ class HomeView(CustomView):
         )
 
 
+def addImageFirebase(file_data):
+    image_name = str(uuid4())
+    t = storage.child("images/"+image_name).put(file_data)
+    return storage.child(t["name"]).get_url(None)
 
 
 class MilkBankView(ModelView):
@@ -80,14 +87,25 @@ class MilkBankView(ModelView):
         if data["image"] is not None:
             # read file data
             file_data = await data["image"][0].read()
-            image_name = str(uuid4())
-            t = storage.child("images/"+image_name).put(file_data)
-            data["image_url"] = storage.child(t["name"]).get_url(None)
+            image_url = addImageFirebase(file_data)
+            data["image_url"] = image_url
             data["image"] =[FileField, None]
             for field in self.fields:
                if field.name == "image_url":
                    field.exclude_from_create = False     
         return await super().create(request, data)
+    
+    async def edit(self, request: Request, pk: Any, data: Dict[str, Any]) -> Any:
+        if data["image"] is not None:
+            # read file data
+            file_data = await data["image"][0].read()
+            image_url = addImageFirebase(file_data)
+            data["image_url"] = image_url
+            data["image"] =[FileField, None]
+            for field in self.fields:
+               if field.name == "image_url":
+                   field.exclude_from_create = False
+        return await super().edit(request, pk, data)
 
 
 class PostAdminView(ModelView):
@@ -100,6 +118,7 @@ class PostAdminView(ModelView):
         "image_url",
         ]
     exclude_fields_from_create = ["image_url"]
+    exclude_fields_from_edit = ["image_url"]
     exclude_fields_from_list = ["image"]
 
     #Uploud image fireabse to storage get url and save in db
@@ -115,7 +134,35 @@ class PostAdminView(ModelView):
                if field.name == "image_url":
                    field.exclude_from_create = False     
         return await super().create(request, data)
+
+class PostComentView(ModelView):
+    fields = [
+        "id",
+        "user",
+        "content",
+        "content",
+        "is_commentable",
+        "is_likeable",
+        "published_at",
+        "approved",
+        "post_likes",
+        "category"
+    ]
     
+    async def edit(self, request: Request, pk: Any, data: Dict[str, Any]) -> Any:
+        postCommentPrev =  request.state.session.execute(select(PostComment).where(PostComment.id == pk)).scalar_one()
+        if postCommentPrev.approved == False and data["approved"] == True:
+            user_ref = firestore.document(f"users/{postCommentPrev.user.id}")
+            post_firebase = {
+                "id": postCommentPrev.id,
+                "user_id": postCommentPrev.user.id,
+                "user": user_ref,
+                "content": postCommentPrev.content,
+            }
+            add_document("posts", pk, post_firebase)
+            
+        return await super().edit(request, pk, data)
+
 
 def add_views_to_app(app, engine_db):
     admin = Admin(
@@ -147,7 +194,8 @@ def add_views_to_app(app, engine_db):
                    ("Comunity",
                     icon="fa fa-users",
                     views=[
-                        ModelView(PostComment, icon="fa fa-comment"),
+                        ModelView(PostCategory, name= "Post Categories", label="Post Categories" ,icon="fa fa-tags"),
+                        PostComentView(PostComment, icon="fa fa-comment"),
                         ModelView(PostLike, icon="fa fa-thumbs-up"),
 
                     ]))
