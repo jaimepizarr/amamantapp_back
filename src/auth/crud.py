@@ -122,7 +122,7 @@ def signup_for_access_token(user: UserCreate, db: Session = Depends(get_db)):
     )
     refresh_token = create_refresh_token(data={"email": user.email})
     userId = str(user.id)
-    firestore_user = add_document("users",userId,{"nombre": user.nombre, "apellido": user.apellido, "email": user.email})
+    firestore_user = add_document("users",userId,{"uid":userId, "nombre": user.nombre, "apellido": user.apellido, "email": user.email})
     if ( firestore_user["success"] ):
         print("SE GUARDO EN FIRESTORE")
     else:
