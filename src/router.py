@@ -10,6 +10,7 @@ from .post_comment import crud as post_comments_crud
 from .post_categories import crud as post_categories_crud
 from .post import crud as posts_crud
 from .question_to_expert import crud as question_to_expert_crud
+from .survey import survey as survey_router
 from fastapi import Depends
 
 
@@ -26,3 +27,4 @@ router.include_router(post_comments_crud.router)
 router.include_router(posts_crud.router)
 router.include_router(question_to_expert_crud.router)
 router.include_router(post_categories_crud.router)
+router.include_router(survey_router.router)

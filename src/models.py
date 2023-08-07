@@ -1,8 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Double
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from .config.database import Base
 from starlette.requests import Request
 import datetime
+from sqlalchemy.ext.mutable import MutableDict
 
 
 class Location(Base):
@@ -37,6 +39,7 @@ class User(Base):
     app_suggestions = relationship("AppSuggestions", back_populates="user")
     post_comments = relationship("PostComment", back_populates="user")
     post_likes = relationship("PostLike", back_populates="user")
+    surveys = relationship("Survey", back_populates="user")
 
 
 class MilkBank(Base):
@@ -145,3 +148,9 @@ class QuestionToExpert(Base):
     image_url = Column(String, nullable=True)
 
 
+class Survey(Base):
+    __tablename__ = "surveys"
+    id = Column(Integer, primary_key=True, index=True)
+    survey = Column(MutableDict.as_mutable(JSONB))
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
+    user = relationship("User", back_populates="surveys")

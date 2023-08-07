@@ -22,7 +22,8 @@ from src.models import (
     PostAprendeMas,
     PostHome,
     QuestionToExpert,
-    PostCategory
+    PostCategory,
+    Survey
 )
 import base64
 from starlette_admin.views import BaseView
@@ -177,7 +178,8 @@ def add_views_to_app(app, engine_db):
         icon="fa fa-user",
         views=[
             ModelView(User, icon="fa fa-user"),
-            ModelView(Donation, icon="fa fa-gift")
+            ModelView(Donation, icon="fa fa-gift"),
+            ModelView(Survey, icon="fa fa-gift")
         ]
 
     ))

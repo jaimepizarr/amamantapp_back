@@ -1,6 +1,7 @@
-from typing import Optional
 import datetime
-from pydantic import BaseModel
+from typing import Any, Dict
+from typing import Optional
+from pydantic import BaseModel, Json,root_validator
 
 class LocationBase(BaseModel):
     country: Optional[str]
@@ -242,3 +243,6 @@ class QuestionToExpertCreate(QuestionToExpertBase):
 
 class QuestionToExpert(QuestionToExpertBase):
     pass
+
+class Survey(BaseModel):
+    survey: Dict[Any, Any]
