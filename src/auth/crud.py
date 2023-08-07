@@ -107,6 +107,7 @@ async def login_for_access_token(user: UserLogin, db: Session = Depends(get_db))
         "access_token": access_token,
         "token_type": "bearer",
         "refresh_token": refresh_token,
+        "id": user.id
     }
 
 
@@ -128,4 +129,4 @@ def signup_for_access_token(user: UserCreate, db: Session = Depends(get_db)):
     else:
         print("F, no se guardo", firestore_user["message"])
     
-    return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
+    return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token, "id": user.id}

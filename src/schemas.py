@@ -64,6 +64,7 @@ class UserToken(BaseModel):
     access_token: Optional[str]
     refresh_token: Optional[str]
     token_type: Optional[str]
+    id: Optional[int]
 
 class UserTokenData(BaseModel):
     email: Optional[str] = None
