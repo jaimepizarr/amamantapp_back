@@ -9,6 +9,7 @@ from ..schemas import (
     PostCommentPartialUpdate,
 )
 from ..config.database import engine
+from ..auth.crud import get_current_user
 
 router = APIRouter(prefix="/post_comments", tags=["PostComments"])
 
@@ -23,8 +24,9 @@ def get_db():
 
 
 @router.post("/", response_model=PostComment)
-def create_post_comment(post_comment: PostCommentCreate, db: Session = Depends(get_db)):
+def create_post_comment(post_comment: PostCommentCreate, db: Session = Depends(get_db),  user=Depends(get_current_user)):
     db_post_comment = models.PostComment(**post_comment.model_dump())
+    db_post_comment.user_id = user.id
     db.add(db_post_comment)
     db.commit()
     db.refresh(db_post_comment)

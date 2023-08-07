@@ -136,10 +136,25 @@ class AppSuggestions(AppSuggestionsBase):
     class Config:
         orm_mode = True
 
+
+class PostCategoriesBase(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
+class PostCategoriesRetrieve(PostCategoriesBase):
+    id: int
+    class Config:
+        orm_mode = True
+
 class PostCommentBase(BaseModel):
-    is_commentable: Optional[bool]
-    user_id: int
-    parent_id: int
+    title: Optional[str] = None
+    content: str
+    is_commentable: Optional[bool] = True
+    is_likeable: Optional[bool] = True
+    parent_id: Optional[int] = None
+    category_id: Optional[int] = None
 
 class PostCommentCreate(PostCommentBase):
     pass
@@ -149,7 +164,10 @@ class PostCommentUpdate(PostCommentBase):
 
 class PostComment(PostCommentBase):
     id: int
+    user_id: Optional[int] = None
     user: Optional[User]
+    category : Optional[PostCategoriesRetrieve]
+    approved: Optional[bool] = None
 
     class Config:
         orm_mode = True
@@ -224,14 +242,3 @@ class QuestionToExpertCreate(QuestionToExpertBase):
 
 class QuestionToExpert(QuestionToExpertBase):
     pass
-
-class PostCategoriesBase(BaseModel):
-    name: str
-
-    class Config:
-        orm_mode = True
-
-class PostCategoriesRetrieve(PostCategoriesBase):
-    id: int
-    class Config:
-        orm_mode = True
