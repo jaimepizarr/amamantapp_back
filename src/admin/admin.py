@@ -160,6 +160,7 @@ class PostComentView(ModelView):
                 "user": user_ref,
                 "content": postCommentPrev.content,
                 "categories": [postCommentPrev.category.name, "Todos" ],
+                "image_url": postCommentPrev.image_url
             }
             add_document("posts", pk, post_firebase)
             
