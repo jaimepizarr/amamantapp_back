@@ -113,20 +113,21 @@ async def login_for_access_token(user: UserLogin, db: Session = Depends(get_db))
 
 @router.post("/signup", response_model=UserToken)
 def signup_for_access_token(user: UserCreate, db: Session = Depends(get_db)):
-    user = models.User(email=user.email, password=get_password_hash(user.password), nombre=user.nombre, apellido=user.apellido)
-    db.add(user)
+    userModel = models.User(email=user.email, password=get_password_hash(user.password), nombre=user.nombre, apellido=user.apellido)
+    db.add(userModel)
     db.commit()
-    db.refresh(user)
+    db.refresh(userModel)
     access_token_expires = timedelta(weeks=ACCESS_TOKEN_EXPIRE_WEEKS)
     access_token = create_access_token(
-        data={"email": user.email}, expires_delta=access_token_expires
+        data={"email": userModel.email}, expires_delta=access_token_expires
     )
-    refresh_token = create_refresh_token(data={"email": user.email})
-    userId = str(user.id)
-    firestore_user = add_document("users",userId,{"uid":userId, "nombre": user.nombre, "apellido": user.apellido, "email": user.email})
+    refresh_token = create_refresh_token(data={"email": userModel.email})
+    userId = str(userModel.id)
+    profile_url = user.profile_picture if user.profile_picture else "https://firebasestorage.googleapis.com/v0/b/amamantapp-72641.appspot.com/o/images%2Fprofile_placeholder.png?alt=media&token=aee47add-82c7-428c-a2a6-751726ed3028 "
+    firestore_user = add_document("users",userId,{"uid":userId, "nombre": userModel.nombre, "apellido": userModel.apellido, "email": userModel.email, "profile_picture": profile_url})
     if ( firestore_user["success"] ):
         print("SE GUARDO EN FIRESTORE")
     else:
         print("F, no se guardo", firestore_user["message"])
     
-    return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token, "id": user.id}
+    return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token, "id": userModel.id}

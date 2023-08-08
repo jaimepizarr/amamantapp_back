@@ -103,7 +103,7 @@ class PostComment(Base):
     post_id = Column(Integer, ForeignKey("post_comments.id", ondelete="NO ACTION"))
     post_likes = relationship("PostLike", back_populates="post_comment")
     category = relationship("PostCategory", back_populates="posts")
-
+    image_url = Column(String, nullable=True)
     async def __admin_repr__(self, request: Request):
         return f"{self.title}"
 

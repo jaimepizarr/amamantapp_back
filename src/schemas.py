@@ -38,6 +38,7 @@ class UserBase(UserLogin):
 class UserCreate(UserBase):
     nombre: str
     apellido: str
+    profile_picture: Optional[str] = None
 
 class UserUpdate(UserBase):
     location_id: int = None
@@ -157,6 +158,7 @@ class PostCommentBase(BaseModel):
     is_likeable: Optional[bool] = True
     parent_id: Optional[int] = None
     category_id: Optional[int] = None
+    image_url: Optional[str] = None
 
 class PostCommentCreate(PostCommentBase):
     pass
