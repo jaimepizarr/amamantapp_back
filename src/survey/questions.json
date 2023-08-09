@@ -1,113 +1,18 @@
-{
-    "id": "123",
-    "type": "navigable",
-    "steps": [
-
-        {
-            "stepIdentifier": {
-                "id": "2"
-            },
-            "type": "question",
-            "title": "¿Alguna vez te han diagnosticado sífilis, hepatitis B o VIH?",
-            "text": "",
-           
-            "buttonText": "Siguiente >",
-            "answerFormat": {
-                "type": "single",
-                "textChoices": [{
-                        "text": "Si",
-                        "value": "Si"
-                    },
-                    {
-                        "text": "No",
-                        "value": "No"
-                    },
-                    {
-                        "text": "No lo sé",
-                        "value": "No Lo se"
-                    }
-                ]
-            }
-        },
-        {
-            "stepIdentifier": {
-                "id": "3"
-            },
-            "type": "question",
-            "title": "¿Tomas algún tipo de medicamento diario?",
-            "text": "",
-           
-            "buttonText": "Siguiente >",
-            "answerFormat": {
-                "type": "single",
-                "textChoices": [{
-                        "text": "Si",
-                        "value": "Si"
-                    },
-                    {
-                        "text": "No",
-                        "value": "No"
-                    },
-                    {
-                        "text": "A veces",
-                        "value": "No Lo se"
-                    }
-                ]
-            }
-        },
-        {
-            "stepIdentifier": {
-                "id": "4"
-            },
-            "type": "question",
-            "title": "En los últimos controles CRED de su bebé, ¿cómo está su crecimiento?",
-            "text": "",
-           
-            "buttonText": "Siguiente >",
-            "answerFormat": {
-                "type": "single",
-                "textChoices": [{
-                        "text": "Si",
-                        "value": "Si"
-                    },
-                    {
-                        "text": "Ha tenido inconvenientes",
-                        "value": "No"
-                    },
-                    {
-                        "text": "No lo sé",
-                        "value": "No Lo se"
-                    }
-                ]
-            }
-        },
-        {
-            "stepIdentifier": {
-                "id": "5"
-            },
-            "type": "question",
-            "title": "¿Ha producido más leche de la que consume su bebé?",
-            "text": "",
-           
-            "buttonText": "Enviar respuestas",
-            "answerFormat": {
-                "type": "single",
-                "textChoices": [{
-                        "text": "Si",
-                        "value": "Si"
-                    },
-                    {
-                        "text": "No",
-                        "value": "No"
-                    },
-                    {
-                        "text": "No lo sé",
-                        "value": "No Lo se"
-                    }
-                ]
-            }
-        }
-
-    ]
-}
-           
+[
+    {
+        "question": "¿Alguna vez te han diagnosticado sífilis, hepatitis B o VIH?",
+        "answerChoices": ["Si", "No", "No lo sé"]
+    },
+    {
+        "question": "¿Tomas algún tipo de medicamento diario?",
+        "answerChoices": ["Si", "No", "A veces"]
+    },
+    {
+        "question": "En los últimos controles CRED de su bebé, ¿cómo está su crecimiento?",
+        "answerChoices": ["Si", "Ha tenido inconvenientes", "No lo sé"]
+    },
+    {
+        "question": "¿Ha producido más leche de la que consume su bebé?",
+        "answerChoices": ["Si", "No", "No lo sé"]
+    }
+]
