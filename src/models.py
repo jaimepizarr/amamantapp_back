@@ -40,6 +40,7 @@ class User(Base):
     post_comments = relationship("PostComment", back_populates="user")
     post_likes = relationship("PostLike", back_populates="user")
     surveys = relationship("Survey", back_populates="user")
+    questions_to_experts = relationship("QuestionToExpert", back_populates="user")
 
 
 class MilkBank(Base):
@@ -146,7 +147,8 @@ class QuestionToExpert(Base):
     id = Column(Integer, primary_key=True, index=True)
     content = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
-
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="NO ACTION"))
+    user = relationship("User", back_populates="questions_to_experts")
 
 class Survey(Base):
     __tablename__ = "surveys"
