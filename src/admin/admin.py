@@ -140,14 +140,15 @@ class PostComentView(ModelView):
     fields = [
         "id",
         "user",
-        "content",
+        "title",
         "content",
         "is_commentable",
         "is_likeable",
         "published_at",
         "approved",
         "post_likes",
-        "category"
+        "category",
+        "from_expert"
     ]
     
     async def edit(self, request: Request, pk: Any, data: Dict[str, Any]) -> Any:
@@ -170,7 +171,7 @@ class PostComentView(ModelView):
 def add_views_to_app(app, engine_db):
     admin = Admin(
         engine_db,
-        title="AmamantApp API",
+        title="AmamantApp Admin",
         index_view=HomeView(label="Home", icon="fa fa-home"),
         auth_provider=MyAuthProvider(),
     )

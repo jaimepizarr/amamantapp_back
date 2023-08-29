@@ -22,6 +22,15 @@ def get_db():
     finally:
         db.close()
 
+@router.get("/list", response_model=list[PostComment])
+def read_post_comments(db: Session = Depends(get_db)):
+    db_post_comments = db.query(models.PostComment).all()
+    return db_post_comments
+
+@router.get("/list/experts", response_model=list[PostComment])
+def read_post_comments_experts(db: Session = Depends(get_db)):
+    db_post_comments = db.query(models.PostComment).filter(models.PostComment.from_expert == True).all()
+    return db_post_comments
 
 @router.post("/", response_model=PostComment)
 def create_post_comment(post_comment: PostCommentCreate, db: Session = Depends(get_db),  user=Depends(get_current_user)):
