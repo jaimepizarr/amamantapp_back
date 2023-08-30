@@ -18,9 +18,9 @@ def get_db():
 
 
 @router.post("/",response_model=QuestionToExpert)
-def create_question_to_expert(question_to_expert: QuestionToExpertCreate, db: Session = Depends(get_db),  user=Depends(get_current_user)):
+def create_question_to_expert(question_to_expert: QuestionToExpertCreate, db: Session = Depends(get_db)):
     db_question_to_expert = models.QuestionToExpert(**question_to_expert.model_dump())
-    db_question_to_expert.user_id = user.id
+    # db_question_to_expert.user_id = user.id
     db.add(db_question_to_expert)
     db.commit()
     db.refresh(db_question_to_expert)
